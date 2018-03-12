@@ -2,9 +2,12 @@ package com.hitglynorthz.repeatr;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -12,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -115,26 +119,25 @@ public class TestGame extends AppCompatActivity {
                 new CountDownTimer(3100, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        initTV.setText("" + millisUntilFinished/1000);
+                        if(millisUntilFinished/1000 >= 1) {
+                            initTV.setText("" + millisUntilFinished / 1000);
+                        } else {
+                            initTV.setText(R.string.go);
+                        }
                     }
 
                     @Override
                     public void onFinish() {
-                        new CountDownTimer(1100, 1000) {
+                        new Handler().postDelayed(new Runnable() {
                             @Override
-                            public void onTick(long millisUntilFinished) {
-                                initTV.setText(R.string.go);
-                            }
-
-                            @Override
-                            public void onFinish() {
+                            public void run() {
                                 initGrid.setVisibility(View.GONE);
                                 initTV.setVisibility(View.GONE);
                                 mainGrid.setVisibility(View.VISIBLE);
 
                                 startGame();
                             }
-                        }.start();
+                        }, 1000);
                     }
                 }.start();
             }
@@ -170,7 +173,6 @@ public class TestGame extends AppCompatActivity {
         }
 
         final Handler handlerBshow = new Handler();
-        final ListIterator<Integer> iterator = tempButtons.listIterator();
         handlerBshow.post(new Runnable(){
             @Override
             public void run() {
@@ -290,6 +292,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(1);
+                vibrateIt(100);
                 //cv1.setForeground(new ColorDrawable(ContextCompat.getColor(getApplicationContext(), R.color.red)));
                 cv1.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
                 new Handler().postDelayed(new Runnable() {
@@ -306,6 +309,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(2);
+                vibrateIt(100);
                 cv2.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.pink));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -321,6 +325,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(3);
+                vibrateIt(100);
                 cv3.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.purple));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -336,6 +341,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(4);
+                vibrateIt(100);
                 cv4.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -351,6 +357,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(6);
+                vibrateIt(100);
                 cv6.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.green));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -366,6 +373,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(7);
+                vibrateIt(100);
                 cv7.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.yellow));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -381,6 +389,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(8);
+                vibrateIt(100);
                 cv8.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.orange));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -396,6 +405,7 @@ public class TestGame extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addInputButtons(9);
+                vibrateIt(100);
                 cv9.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_gray));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -410,6 +420,7 @@ public class TestGame extends AppCompatActivity {
         cv5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrateIt(200);
                 checkButtons();
             }
         });
@@ -447,6 +458,7 @@ public class TestGame extends AppCompatActivity {
             gameLogic();
         } else {
             Log.i("TAG", "false");
+            vibrateIt(400);
             cv5.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -507,6 +519,16 @@ public class TestGame extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    //
+    private void vibrateIt(int time) {
+        //view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        if (Build.VERSION.SDK_INT >= 26) {
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(time,10));
+        } else {
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(time);
+        }
     }
 
     // ** test blinkButton **
